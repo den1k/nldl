@@ -40,8 +40,7 @@
 
 (insta/defparser nldl-parser grammar)
 
-
-(def parse-result-transforms
+(def default-transforms
   {:var          (fn [var] (symbol (str "?" var)))
    :attr         keyword
    :number       read-clj
@@ -49,16 +48,27 @@
    :obj          identity
    :where-clause vector})
 
-
 (defn nl->dl
-  ([s] (nl->dl s parse-result-transforms))
+  "Natural Language (string) -> Datalog (EDN).
+
+  Parse syntax:
+    - `:where` clauses can be seperated by commas or new-lines
+
+  2-arity version takes a map of transforms that can be used to extend or
+  replace default transforms.
+  For instance, the `:find` clause can be extended to pull fields for a
+  variable, with a transform map like:
+    `{:find (fn [var] [:find (list 'pull var '[*])])}`
+
+  "
+  ([s] (nl->dl s default-transforms))
   ([s transforms]
    (let [p (some->> s str/trim not-empty nldl-parser)]
      (if (insta/failure? p)
        (assoc p :errored? true)
        (some->> p
                 not-empty
-                (insta/transform (merge parse-result-transforms transforms))
+                (insta/transform (merge default-transforms transforms))
                 (apply concat)
                 vec)))))
 
