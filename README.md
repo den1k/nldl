@@ -3,6 +3,7 @@
 **N**atural **L**anguage for Clojure's **D**ata**l**og flavor
 as present in Datomic, Datascript, Datahike etc.
 
+Inspired by [nl-datalog](https://github.com/harc/nl-datalog) and its [demo](http://alexwarth.com/projects/nl-datalog/)
 
 ## Usage
 ```clojure
